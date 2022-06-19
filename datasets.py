@@ -8,6 +8,7 @@ from skimage.transform import rescale, resize, downscale_local_mean
 import random
 import numpy as np
 import torch
+import pdb
 #这个默认是用膨胀核大小为50的
 class ImageDataset(Dataset):
     def __init__(self, root, unaligned=False, mode='train'):
@@ -101,7 +102,7 @@ class ImageDataset(Dataset):
         item_F=torch.from_numpy(item_F.copy()).float()
         item_F=item_F.view(400,400,1)
         item_F=item_F.transpose(0, 1).transpose(0, 2).contiguous()
-          
+
         return {'A': item_A, 'B': item_B, 'C': item_C, 'D': item_D, 'E': item_E, 'F': item_F}
 
     def __len__(self):

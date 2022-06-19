@@ -12,8 +12,9 @@ from utils import LambdaLR
 from utils import weights_init_normal
 from model import Generator_S2F,Generator_F2S,Discriminator
 from datasets import ImageDataset
+import pdb
 
-os.environ["CUDA_VISIBLE_DEVICES"]="7,3,1,2,0,5,6,4"
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 torch.manual_seed(628)
 
 parser = argparse.ArgumentParser()
@@ -32,7 +33,7 @@ opt = parser.parse_args()
 
 
 # ISTD
-opt.dataroot = '/home/liuzhihao/dataset/PAISTD8'
+opt.dataroot = './dataset'
 
 if not os.path.exists('ckpt'):
     os.mkdir('ckpt')
@@ -93,7 +94,7 @@ fake_B_buffer = ReplayBuffer()
 
 # Dataset loader
 dataloader = DataLoader(ImageDataset(opt.dataroot, unaligned=True),
-						batch_size=opt.batchSize, shuffle=True, num_workers=opt.n_cpu)
+						batch_size=opt.batchSize, shuffle=False, num_workers=opt.n_cpu)
 
 curr_iter = 0
 G_losses_temp = 0
@@ -195,9 +196,9 @@ for epoch in range(opt.epoch, opt.n_epochs):
 
 
     if epoch>90:
-        torch.save(netG_A2B.state_dict(), ('ckpt/netG_A2B_%d.pth' % (epoch + 1)))
-        torch.save(netG_1.state_dict(), ('ckpt/netG_1_%d.pth' % (epoch + 1)))
-        torch.save(netG_2.state_dict(), ('ckpt/netG_2_%d.pth' % (epoch + 1)))
-        torch.save(netD_B.state_dict(), ('ckpt/netD_B_%d.pth' % (epoch+1)))
+        torch.save(netG_A2B.state_dict(), ('ckpt/my_ckpt/netG_A2B_%d.pth' % (epoch + 1)))
+        torch.save(netG_1.state_dict(), ('ckpt/my_ckpt/netG_1_%d.pth' % (epoch + 1)))
+        torch.save(netG_2.state_dict(), ('ckpt/my_ckpt/netG_2_%d.pth' % (epoch + 1)))
+        torch.save(netD_B.state_dict(), ('ckpt/my_ckpt/netD_B_%d.pth' % (epoch+1)))
 
     print('Epoch:{}'.format(epoch))

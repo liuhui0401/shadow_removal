@@ -10,7 +10,8 @@ from skimage.transform import resize
 from model import Generator_S2F,Generator_F2S
 import warnings
 warnings.filterwarnings("ignore")
-os.environ["CUDA_VISIBLE_DEVICES"]="0,6,5,1,7,4,2,3"
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
+import pdb
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--cuda', action='store_true', help='use GPU computation')
@@ -20,10 +21,9 @@ parser.add_argument('--generator_2', type=str, default='ckpt/netG_2.pth', help='
 opt = parser.parse_args()
 
 ## ISTD
-opt.dataroot_A = '/home/liuzhihao/dataset/ISTD/test/test_A'
+opt.dataroot_A = 'dataset/test_/test_A'
 opt.im_suf_A = '.png'
-# opt.dataroot_B = '/home/liuzhihao/dataset/ISTD/test/test_B'
-opt.dataroot_B = '/home/liuzhihao/BDRAR/test_A_mask_istd_6/'
+opt.dataroot_B = 'dataset/test_/test_B'
 opt.im_suf_B = '.png'
 if torch.cuda.is_available():
     opt.cuda = True
@@ -45,17 +45,22 @@ if opt.cuda:
 gt_list = [os.path.splitext(f)[0] for f in os.listdir(opt.dataroot_A) if f.endswith(opt.im_suf_A)]
 
 for ee in range(100,90,-1):
-    g1ckpt='ckpt/netG_1.pth'
-    g2ckpt='ckpt/netG_2.pth'
-    # g1ckpt='ckpt/netG_1_%s.pth'%(ee)
-    # g2ckpt='ckpt/netG_2_%s.pth'%(ee)
+    # pretrained model
+    # g1ckpt='ckpt/ckpt/netG_1.pth'
+    # g2ckpt='ckpt/ckpt/netG_2.pth'
+    # my retrained model
+    g1ckpt='ckpt/my_ckpt/netG_1_100.pth'
+    g2ckpt='ckpt/my_ckpt/netG_2_100.pth'
 
     netG_1.load_state_dict(torch.load(g1ckpt))
     netG_1.eval()
     netG_2.load_state_dict(torch.load(g2ckpt))
     netG_2.eval()
     
-    savepath='ckpt/B_%s_mask6'%(ee)
+    # pretrained save path
+    # savepath='ckpt/B_%s_mask6_new'%(ee)
+    # my retrain save path
+    savepath='ckpt/B_%s_mask6_new'%(ee)
     if not os.path.exists(savepath):
         os.makedirs(savepath)
     for idx, img_name in enumerate(gt_list):
@@ -188,7 +193,7 @@ for ee in range(100,90,-1):
                 fake_B480 = temp_B480.data
                 fake_B480[:,0]=50.0*(fake_B480[:,0]+1.0)
                 fake_B480[:,1:]=255.0*(fake_B480[:,1:]+1.0)/2.0-128.0
-                fake_B480=fake_B480.data.squeeze(0).cpu()
+                fake_B480=fake_B480.squeeze(0).cpu()
                 fake_B480=fake_B480.transpose(0, 2).transpose(0, 1).contiguous().numpy()
                 fake_B480=resize(fake_B480,(480,640,3))
                 fake_B480=color.lab2rgb(fake_B480)
